@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Grok Bot Terminal</title>
+  <meta name="description" content="Overnight meme-coin trading terminal run by six cooperating AI agents. Paper trading only.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#111827"/><path d="M12 17c0-3 2-5 5-5h14c3 0 5 2 5 5v10c0 5-4 9-9 9h-6c-5 0-9-4-9-9V17z" fill="#fff"/><path d="M17 27l12-9" stroke="#111827" stroke-width="3.5" stroke-linecap="round"/></svg>
+      <div>
+        <h1>Grok Bot</h1>
+        <p id="subtitle">new session · overnight trading prompt</p>
+      </div>
+    </div>
+    <span class="chip" id="chipMode">paper · simulated market</span>
+  </header>
+
+  <main id="main">
+    <section id="viewCompose" aria-labelledby="composeTitle">
+      <h2 id="composeTitle" class="sr">Compose prompt</h2>
+      <div class="card editor">
+        <div class="card-head">
+          <span class="mono">grok-bot-overnight.prompt</span>
+          <span class="mono muted" id="promptStats">0 chars</span>
+        </div>
+        <label class="sr" for="promptInput">Trading prompt</label>
+        <textarea id="promptInput" spellcheck="false" autocomplete="off" rows="24"></textarea>
+        <div class="card-foot">
+          <div class="chips">
+            <span class="chip mono" id="chipAgents">6 agents</span>
+            <span class="chip mono" id="chipStart">start $70</span>
+            <span class="chip mono" id="chipWindow">23:00 → 07:00</span>
+          </div>
+          <button class="btn primary" id="btnRun" type="button">Run ↑</button>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card pad">
+          <h3>Run settings</h3>
+          <div class="form">
+            <label for="selMode">Market data</label>
+            <select id="selMode">
+              <option value="sim">Simulated market (seeded, replayable)</option>
+              <option value="live">Live DEX data (DexScreener + RugCheck)</option>
+            </select>
+            <label for="inSeed">Seed</label>
+            <input id="inSeed" type="number" min="1" max="999999" value="7">
+            <label for="selSpeed">Speed</label>
+            <select id="selSpeed">
+              <option value="6">Slow · 6 min/s</option>
+              <option value="20" selected>Normal · 20 min/s</option>
+              <option value="60">Fast · 60 min/s</option>
+              <option value="240">Turbo · 240 min/s</option>
+            </select>
+          </div>
+          <p class="note">Execution is always paper trading. Live mode reads real market data but never places an order.</p>
+        </div>
+        <div class="card pad">
+          <h3>Prompt parsed</h3>
+          <ul id="parseReport" class="plain"></ul>
+        </div>
+      </div>
+
+      <div class="card pad" id="tokenCard">
+        <h3>Prompt efficiency</h3>
+        <div class="tiles" id="tokenTiles"></div>
+        <p class="note" id="tokenNote"></p>
+      </div>
+    </section>
+
+    <section id="viewTerminal" hidden aria-labelledby="termTitle">
+      <div class="term">
+        <div class="term-top">
+          <div class="term-id">
+            <svg class="logo big" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="24" fill="#111827"/><path d="M12 17c0-3 2-5 5-5h14c3 0 5 2 5 5v10c0 5-4 9-9 9h-6c-5 0-9-4-9-9V17z" fill="#fff"/><path d="M17 27l12-9" stroke="#111827" stroke-width="3.5" stroke-linecap="round"/></svg>
+            <div>
+              <h2 id="termTitle"><span class="grad">Grok Bot</span> Terminal <span class="tag" id="tagVer">v1.0-night</span></h2>
+              <div class="status"><span class="dot" id="dot"></span><span id="statusText">starting</span></div>
+              <div class="banner mono" id="banner">ready</div>
+              <div class="muted small">every trade gets a reason</div>
+            </div>
+          </div>
+          <div class="stats" role="group" aria-label="Account">
+            <div class="stat big"><span class="lbl">Balance</span><span class="val" id="stBalance">$0.00</span></div>
+            <div class="stat"><span class="lbl">Trades</span><span class="val" id="stTrades">0</span></div>
+            <div class="stat"><span class="lbl">Wins</span><span class="val good" id="stWins">0</span></div>
+            <div class="stat"><span class="lbl">Losses</span><span class="val bad" id="stLosses">0</span></div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn" id="btnPause" type="button">Pause</button>
+          <label class="sr" for="selSpeed2">Speed</label>
+          <select id="selSpeed2">
+            <option value="6">Slow</option><option value="20">Normal</option><option value="60">Fast</option><option value="240">Turbo</option>
+          </select>
+          <button class="btn" id="btnLog" type="button">Download log</button>
+          <button class="btn" id="btnJson" type="button">Export JSON</button>
+          <button class="btn" id="btnBack" type="button">New prompt</button>
+        </div>
+
+        <div class="body">
+          <aside class="agents" aria-label="Agents">
+            <div class="agents-head"><span>AGENTS</span><span class="muted" id="agentsOnline">6 online</span></div>
+            <ul id="agentList" class="plain"></ul>
+          </aside>
+          <div class="center">
+            <div class="card pad flow">
+              <div class="flow-head"><span>LIVE FLOW · SCAN → CHECK → SIZE → EXEC → LOG</span><span class="muted mono" id="checked">checked 0</span></div>
+              <ul id="flowList" class="flow-list plain"></ul>
+              <svg class="flow-svg" viewBox="0 0 420 110" role="img" aria-label="Pipeline: rug check to executor">
+                <path d="M110 55 H310" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 5" fill="none"/>
+                <circle cx="70" cy="55" r="34" class="node bad-n"/><path d="M70 38l-13 22h26z" class="glyph bad-g"/>
+                <circle cx="350" cy="55" r="34" class="node good-n" id="execNode"/><path d="M341 44v22M359 44v22" class="glyph good-g"/>
+                <text x="70" y="104" text-anchor="middle" class="svg-t bad-g" id="svgRug">RUG CHECK</text>
+                <text x="350" y="104" text-anchor="middle" class="svg-t good-g" id="svgExec">EXECUTOR</text>
+              </svg>
+            </div>
+
+            <div class="grid4">
+              <div class="mini c-pink"><span class="lbl">FILTERED</span><b id="miFiltered">0</b><small id="miSkipped">+ 0 skipped</small></div>
+              <div class="mini c-purple"><span class="lbl">SIZER</span><b id="miSizer">idle</b><small id="miSizerSub">sizes from equity</small></div>
+              <div class="mini c-orange"><span class="lbl">LOGGER</span><b id="miLogger">line #0</b><small>each with a reason</small></div>
+              <div class="mini c-blue"><span class="lbl">EQUITY</span><b id="miEquity">+$0.00</b><small>last close</small></div>
+            </div>
+
+            <div class="grid2">
+              <div class="card pad" id="tradeCard">
+                <div class="card-title"><span>TRADE · ENTRY vs EXIT</span><span class="tag" id="tcStatus">–</span></div>
+                <div class="tc-head"><b id="tcSymbol">no trade yet</b><span id="tcMult" class="good"></span></div>
+                <dl class="kv" id="tcKv"></dl>
+                <p class="muted small" id="tcReason"></p>
+              </div>
+              <div class="card pad">
+                <div class="card-title"><span class="mono">$ tail -f night.log</span><span class="muted mono" id="tailCount">0 lines</span></div>
+                <pre class="tail mono" id="tail" aria-live="off"></pre>
+              </div>
+            </div>
+
+            <div class="card pad">
+              <div class="card-title"><span>RESULT · START vs NOW</span><span class="muted small" id="resultNote">paper-traded</span></div>
+              <div class="res-row"><span>START</span><b id="rsStart">$70.00</b></div>
+              <div class="bar"><span id="barFill"></span></div>
+              <div class="res-row"><span>NOW</span><b id="rsNow">$70.00</b></div>
+              <canvas id="curve" width="640" height="140" role="img" aria-label="Equity curve"></canvas>
+              <div class="res-row small"><span id="rsWL" class="muted">0 W / 0 L</span><span id="rsDd" class="muted">max drawdown 0%</span></div>
+            </div>
+
+            <div class="card pad">
+              <div class="card-title"><span>LOG</span><span class="muted small">newest first</span></div>
+              <ul id="logList" class="loglist plain"></ul>
+            </div>
+
+            <div class="card pad" id="tokenCard2">
+              <h3>Token usage</h3>
+              <div class="tiles" id="tokenTiles2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <dialog id="recap" aria-labelledby="recapTitle">
+        <h2 id="recapTitle">07:00 recap</h2>
+        <div id="recapBody"></div>
+        <p class="note">Paper-traded on <span id="recapSource">simulated</span> market data. Not financial advice, and past or simulated results do not predict real trading outcomes.</p>
+        <div class="dlg-actions"><button class="btn" id="btnBrief" type="button" hidden>AI briefing</button><button class="btn primary" id="btnClose" type="button">Close</button></div>
+        <pre class="tail mono" id="briefOut" hidden></pre>
+      </dialog>
+    </section>
+  </main>
+
+  <div class="sr" id="live" aria-live="polite"></div>
+  <script src="env.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
