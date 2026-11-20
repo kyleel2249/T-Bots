@@ -4,6 +4,7 @@ import { DEFAULT_CONFIG, cloneConfig } from '../public/js/config.js';
 import { SimFeed } from '../public/js/market/sim-feed.js';
 import { SimClock } from '../public/js/core/clock.js';
 import { Orchestrator } from '../public/js/core/orchestrator.js';
+import { pathToFileURL } from 'node:url';
 
 export async function runNight(seed, cfg = cloneConfig(DEFAULT_CONFIG)) {
   const clock = new SimClock(cfg.session.startTime, cfg.session.endTime);
@@ -13,7 +14,7 @@ export async function runNight(seed, cfg = cloneConfig(DEFAULT_CONFIG)) {
   return o;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const n = Number(process.argv[2] || 40);
   const first = Number(process.argv[3] || 1);
   const rows = [];
