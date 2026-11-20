@@ -1,0 +1,14 @@
+{
+  "name": "grok-bot",
+  "version": "1.0.0",
+  "description": "Grok Bot - overnight meme-coin trading terminal run by six cooperating agents (paper trading). Runs locally.",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node scripts/serve.mjs 8080 --open",
+    "serve": "node scripts/serve.mjs 8080",
+    "test": "node --test",
+    "sweep": "node scripts/sweep.mjs"
+  }
+}
