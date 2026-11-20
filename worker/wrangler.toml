@@ -1,0 +1,10 @@
+name = "grok-bot-llm-proxy"
+main = "llm-proxy.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Exact origin of your deployed site, e.g. https://grok-bot.pages.dev
+ALLOWED_ORIGIN = "https://grok-bot.pages.dev"
+ANTHROPIC_MODEL = "claude-sonnet-5-5"
+
+# Set the key with: wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml

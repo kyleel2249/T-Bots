@@ -11,8 +11,8 @@ Overnight meme-coin trading terminal run by six cooperating agents (Scanner, Rug
 ```bash
 npm start            # same as start.bat, any OS
 npm run serve        # http://localhost:8080, no auto-open
-npm test             # run the test suite
-npm run sweep        # simulated nights, outcome distribution
+npm test             # 17 tests
+npm run sweep        # 40 simulated nights, outcome distribution
 ```
 
 Edit the prompt on the first screen, press **Run**. The prompt is parsed into the engine config (every number and switch), and anything not found in the text keeps a default that is listed under "Prompt parsed".
@@ -37,6 +37,30 @@ Edit the prompt on the first screen, press **Run**. The prompt is parsed into th
 ## Prompt efficiency
 
 `prompt-manager.js` keeps versioned global + per-agent templates. Each agent receives the shared header (a cacheable prefix, built with `cache_control`) plus only its own rules. Compression is lossless, and the dashboard shows estimated tokens, savings against sending the full prompt to every agent, and actual provider usage when the optional briefing agent runs.
+
+## Deploy
+
+Firebase Hosting (+ optional run history):
+```bash
+cp .env.example .env     # fill Firebase values (optional)
+# edit .firebaserc with your project id
+npm run deploy:firebase
+```
+Enable Anonymous auth and Firestore in the console; `firestore.rules` restricts each user to their own runs.
+
+Cloudflare Pages:
+```bash
+npm run deploy:cloudflare
+```
+`public/_headers` carries the CSP and security headers.
+
+Optional AI briefing (Cloudflare Worker proxy, key stays server-side):
+```bash
+# set ALLOWED_ORIGIN in worker/wrangler.toml to your site origin
+wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml
+npm run deploy:worker
+# put the worker URL in .env as LLM_PROXY_URL, then: npm run build:env
+```
 
 ## Not included
 

@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each signed-in (anonymous) user can only read and write their own runs.
+    match /users/{uid}/runs/{runId} {
+      allow read, create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.size() < 900000;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
